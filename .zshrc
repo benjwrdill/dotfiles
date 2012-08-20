@@ -45,3 +45,7 @@ bindkey '^R' history-incremental-search-backward
 bindkey '^S' history-incremental-search-forward
 bindkey '^P' history-incremental-search-backward
 bindkey '^N' history-incremental-search-forward
+
+# aliases
+alias -r tux='tmux -2 attach-session' # opens tmux in 256-color mode with
+                                      # friendly windowpanes

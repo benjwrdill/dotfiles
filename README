@@ -1,1 +1,12 @@
-hello dots!
+My dotfiles. The beginnings of a portable environment for my frequent comings and goings between thevarious computers in my life, not to mention the frequent reinstalls that I make.
+
+Basic instructions:
+
+1. After stabilizing the new OS, install and activate git.
+2. Clone into this repo.
+3. Symlink (ln -s) .vimrc, .tmux.conf, and .zshrc to ~/
+4. Install vim, tmux, and zsh.
+5. Vim requires powerline, pathogen, and jellybeans to function without throwing an error.
+
+
+vimfiles repo is on the todo list, coming soon hopefully.
