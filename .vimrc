@@ -15,8 +15,8 @@ set backspace=indent,eol,start
 " Replaces the tab character with four spaces when pressing <Tab> and 
 " enables smart indentation before/after brackets.
 set smartindent
-set tabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
 set expandtab
 
 " Shows line numbers
@@ -108,4 +108,4 @@ hi LineNr ctermfg=lightyellow
 
 
 
-call pathogen#infect()
+" call pathogen#infect()
