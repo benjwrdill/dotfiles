@@ -13,12 +13,18 @@ vim: colors vim-plugins .vimrc
 	ln -s ~/dotfiles/.vimrc ~/
 
 vim-plugins:
+	mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+	curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+	cd ~/.vim/bundle
+	git clone https\://github.com/reeedes/vim-wordy
 
-tmux:
+tmux-install:
 	apt-get install -y python-software-properties software-properties-common
 	add-apt-repository -y ppa:pi-rho/dev
 	apt-get update
 	apt-get install -y tmux=2.0-1~ppa1~t
+
+tmux:
 	ln -s ~/dotfiles/.tmux.conf ~/
 
 zsh:

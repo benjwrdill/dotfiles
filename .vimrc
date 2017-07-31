@@ -108,4 +108,9 @@ hi LineNr ctermfg=lightyellow
 
 
 
-" call pathogen#infect()
+call pathogen#infect()
+
+" Wordy plugin: use F8 to cycle through wordy dictionaries
+noremap <silent> <F8> :<C-u>NextWordy<cr>
+xnoremap <silent> <F8> :<C-u>NextWordy<cr>
+inoremap <silent> <F8> :<C-u>NextWordy<cr>
