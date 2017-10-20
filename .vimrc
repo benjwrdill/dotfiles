@@ -22,11 +22,8 @@ set expandtab
 " Shows line numbers
 set number
 
-if has("vms")
-  set nobackup		" do not keep a backup file, use versions instead
-else
-  set backup		" keep a backup file
-endif
+set backupdir=~/.vim/backup//
+set directory=~/.vim/swp//
 set history=1000	" keep 1000 lines of command line history
 set ruler		" show the cursor position all the time
 set showcmd		" display incomplete commands
