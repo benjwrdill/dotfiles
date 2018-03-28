@@ -1,37 +1,39 @@
+mkfile := $(abspath $(lastword $(MAKEFILE_LIST)))
+mkfile_path := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+tmux_path = ~/.tmux.conf
+
 refresh: .zshrc .vimrc .tmux.conf
+ifneq (,$(wildcard $(tmux_path)))
 	rm ~/.vimrc
 	rm ~/.zshrc
 	rm ~/.tmux.conf
-	ln -s ~/dotfiles/.vimrc ~/
-	ln -s ~/dotfiles/.zshrc ~/
-	ln -s ~/dotfiles/.tmux.conf ~/
+endif
+	ln -s $(mkfile_path).vimrc ~/
+	ln -s $(mkfile_path).zshrc ~/
+	ln -s $(mkfile_path).tmux.conf ~/
 
-new: zsh vim tmux
+new: zsh vim tmux notes
 
 vim: colors vim-plugins .vimrc
 	apt-get install vim
-	ln -s ~/dotfiles/.vimrc ~/
+	ln -s $(mkfile_path)/.vimrc $(mkfile_path)/..
 
 vim-plugins:
-	mkdir -p ~/.vim/autoload ~/.vim/bundle && \
-	curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
-	cd ~/.vim/bundle
-	git clone https\://github.com/reeedes/vim-wordy
-
-tmux-install:
-	apt-get install -y python-software-properties software-properties-common
-	add-apt-repository -y ppa:pi-rho/dev
-	apt-get update
-	apt-get install -y tmux=2.0-1~ppa1~t
+	mkdir -p $(mkfile_path)/../vim/autoload $(mkfile_path)/../vim/bundle && \
+	curl -LSso $(mkfile_path)/../vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+	git clone https\://github.com/reedes/vim-wordy $(mkfile_path)/../vim/bundle/vim-wordy
 
 tmux:
-	ln -s ~/dotfiles/.tmux.conf ~/
+	ln -s $(mkfile_path)/.tmux.conf $(mkfile_path)/../
 
 zsh:
-	apt-get install zsh
-	ln -s ~/dotfiles/.zshrc ~/
+	sudo apt-get install zsh
+	ln -s ~/dotfiles/.zshrc $(mkfile_path)/../
 	sh -c "$$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
 
+notes:
+	sudo ln -s $(shell pwd)/bin/note.sh /usr/bin/note
+	mkdir ~/notes
 
 colors:
 	mkdir ~/.vim
