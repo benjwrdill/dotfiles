@@ -38,15 +38,17 @@
  '(custom-safe-themes
    (quote
     ("82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" default)))
+ '(org-agenda-files (quote ("~/notes/todos.org" "")))
  '(package-selected-packages
    (quote
-    (color-theme-sanityinc-tomorrow exec-path-from-shell go-mode))))
+    (color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
+ '(show-paren-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:family "Source Code Pro for Powerline" :foundry "ADBO" :slant normal :weight normal :height 113 :width normal)))))
 
 (defun set-exec-path-from-shell-PATH ()
   (let ((path-from-shell (replace-regexp-in-string
@@ -76,3 +78,21 @@
 
 (add-to-list 'exec-path "/home/ben/gocode/bin")
 
+(setq orc-src-tab-acts-natively t)
+
+(org-babel-do-load-languages
+  'org-babel-load-languages '((sh . t)))
+
+(setq org-agenda-files '("~/notes/"))
+
+(setq org-todo-keywords
+      '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELLED")))
+
+(defun air-pop-to-org-agenda (split)
+  "Visit the org agenda, in the current window or a SPLIT."
+  (interactive "P")
+  (org-agenda-list)
+  (when (not split)
+    (delete-other-windows)))
+
+(define-key global-map (kbd "C-c t a") 'air-pop-to-org-agenda)
