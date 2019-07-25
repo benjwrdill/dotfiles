@@ -9,6 +9,8 @@
 	     '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives
 	     '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives
+	     '("org" . "http://orgmode.org/elpa/") t)
 ;; Bootstrap use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -39,11 +41,14 @@
  '(debug-on-error t)
  '(package-selected-packages
    (quote
-    (magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
+    (org-plus-contrib magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
  '(show-paren-mode t))
 
 (require 'org-habit)
-
+(use-package org-contacts
+  :ensure nil
+  :after org
+  :custom (org-contacts-files '("~/git/org/contacts.org")))
 ;;
 ;; Standard key bindings
 (global-set-key "\C-cl" 'org-store-link)
@@ -89,6 +94,7 @@
 (global-set-key (kbd "C-<f11>") 'org-clock-in)
 (global-set-key (kbd "C-s-<f12>") 'bh/save-then-publish)
 (global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-x g") 'magit-status)
 
 (defun bh/hide-other ()
   (interactive)
@@ -148,6 +154,9 @@
 ;; I use C-c c to start capture mode
 (global-set-key (kbd "C-c c") 'org-capture)
 
+;; Contacts template
+(defvar my/org-contacts-template )
+
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (setq org-capture-templates
       (quote (("t" "todo" entry (file "~/git/org/refile.org")
@@ -165,7 +174,15 @@
               ("p" "Phone call" entry (file "~/git/org/refile.org")
                "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
               ("h" "Habit" entry (file "~/git/org/refile.org")
-               "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+               "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n")
+	      ("c" "Contact" entry (file "~/git/org/refile.org")
+	       "* %(org-contacts-template-name)
+:PROPERTIES:
+:ADDRESS: %^{123 Broad St, Birmingham, AL 35244}
+:BIRTHDAY: %^{yyyy-mm-dd}
+:EMAIL: %(org-contacts-template-email)
+:NOTE: %^{NOTE}
+:END:" 	       :empty-lines 1))))
 
 (setq org-clock-out-remove-zero-time-clocks t)
 ;; Remove empty LOGBOOK drawers on clock out
@@ -698,3 +715,4 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 
 ;;(defun org-is-habit-p (&optional pom)
 ;;  (string= "habit" (org-entry-get (or pom (point)) "STYLE")))
+(setenv "SSH_ASKPASS" "git-gui--askpass")
