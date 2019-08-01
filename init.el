@@ -41,8 +41,25 @@
  '(debug-on-error t)
  '(package-selected-packages
    (quote
-    (org-plus-contrib magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
+    (ag xref-js2 js2-refactor js2-mode org-plus-contrib magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
  '(show-paren-mode t))
+
+(require 'js2-mode)
+(require 'js2-refactor)
+(require 'xref-js2)
+
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+
+(add-hook 'js2-mode-hook #'js2-imenu-extras-Mode)
+(add-hook 'js2-mode-hook #'js2-refactor-mode)
+(js2r-add-keybindings-with-prefix "C-c C-r")
+(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+
+;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so unbind it
+(define-key js-mode-map (kbd "M-.") nil)
+
+(add-hook 'js2-mode-hook (lambda ()
+			   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
 
 (require 'org-habit)
 (use-package org-contacts
@@ -716,3 +733,5 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 ;;(defun org-is-habit-p (&optional pom)
 ;;  (string= "habit" (org-entry-get (or pom (point)) "STYLE")))
 (setenv "SSH_ASKPASS" "git-gui--askpass")
+
+(desktop-save-mode 1)
