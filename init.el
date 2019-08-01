@@ -1,3 +1,4 @@
+
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
@@ -39,27 +40,62 @@
    (quote
     ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" default)))
  '(debug-on-error t)
+ '(org-contacts-files (quote ("~/git/org/contacts.org")))
  '(package-selected-packages
    (quote
-    (ag xref-js2 js2-refactor js2-mode org-plus-contrib magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
+    (feature-mode tide typescript-mode company ag xref-js2 js2-refactor js2-mode org-plus-contrib magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
  '(show-paren-mode t))
 
 (require 'js2-mode)
 (require 'js2-refactor)
 (require 'xref-js2)
+(require 'feature-mode)
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
 
-(add-hook 'js2-mode-hook #'js2-imenu-extras-Mode)
+(setq feature-step-search-path "features/**/*.js")
+(add-hook 'after-save-hook #'run-features)
+(defun run-features ()
+  "Run feature files"
+  (when (eq major-mode 'feature-mode)
+    (shell-command (format "cd .. & echo %s | wdio wdio.conf.js" buffer-file-name))))
+
+(add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
 (add-hook 'js2-mode-hook #'js2-refactor-mode)
 (js2r-add-keybindings-with-prefix "C-c C-r")
 (define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+
+(add-hook 'after-init-hook 'global-company-mode)
 
 ;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so unbind it
 (define-key js-mode-map (kbd "M-.") nil)
 
 (add-hook 'js2-mode-hook (lambda ()
 			   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  (company-mode 1))
+
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+(add-hook 'js2-mode-hook #'setup-tide-mode)
+
+(setq-default indent-tabs-mode nil)
+(setq tab-width 2)
+(defvaralias 'c-basic-offset 'tab-width)
+(defvaralias 'cperl-indent-level 'tab-width)
 
 (require 'org-habit)
 (use-package org-contacts
