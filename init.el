@@ -29,74 +29,30 @@
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
+(desktop-save-mode 1)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (sanityinc-solarized-dark)))
+ '(custom-enabled-themes (quote (sanityinc-solarized-light)))
  '(custom-safe-themes
    (quote
-    ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" default)))
+    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" default)))
  '(debug-on-error t)
  '(org-contacts-files (quote ("~/git/org/contacts.org")))
+ '(org-export-backends (quote (ascii html icalendar latex md odt)))
+ '(org-habit-show-habits-only-for-today t)
+ '(org-pomodoro-audio-player nil)
+ '(org-pomodoro-killed-sound-p t)
+ '(org-pomodoro-ticking-sound-p t)
  '(package-selected-packages
    (quote
-    (feature-mode tide typescript-mode company ag xref-js2 js2-refactor js2-mode org-plus-contrib magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
+    (org-plus-contrib magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
  '(show-paren-mode t))
 
-(require 'js2-mode)
-(require 'js2-refactor)
-(require 'xref-js2)
-(require 'feature-mode)
-
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-(add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
-
-(setq feature-step-search-path "features/**/*.js")
-(add-hook 'after-save-hook #'run-features)
-(defun run-features ()
-  "Run feature files"
-  (when (eq major-mode 'feature-mode)
-    (shell-command (format "cd .. & echo %s | wdio wdio.conf.js" buffer-file-name))))
-
-(add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
-(add-hook 'js2-mode-hook #'js2-refactor-mode)
-(js2r-add-keybindings-with-prefix "C-c C-r")
-(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
-
-(add-hook 'after-init-hook 'global-company-mode)
-
-;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so unbind it
-(define-key js-mode-map (kbd "M-.") nil)
-
-(add-hook 'js2-mode-hook (lambda ()
-			   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
-
-(defun setup-tide-mode ()
-  (interactive)
-  (tide-setup)
-  (flycheck-mode +1)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (eldoc-mode +1)
-  (tide-hl-identifier-mode +1)
-  (company-mode 1))
-
-;; aligns annotation to the right hand side
-(setq company-tooltip-align-annotations t)
-
-;; formats the buffer before saving
-(add-hook 'before-save-hook 'tide-format-before-save)
-
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
-(add-hook 'js2-mode-hook #'setup-tide-mode)
-
-(setq-default indent-tabs-mode nil)
-(setq tab-width 2)
-(defvaralias 'c-basic-offset 'tab-width)
-(defvaralias 'cperl-indent-level 'tab-width)
-
+(require 'org-tempo)
 (require 'org-habit)
 (use-package org-contacts
   :ensure nil
@@ -203,9 +159,51 @@
 
 (setq org-directory "~/git/org")
 (setq org-default-notes-file "~/git/org/refile.org")
+(setq org-modules (quote (org-crypt
+			  org-id
+			  org-info
+			  org-habit)))
+;; position the habit graph on the agenda to the right of the default
+(setq org-habit-graph-column 50)
+
+(defvar my/org-habit-show-graphs-everywhere t
+  "If non-nil, show habit graphs in all types of agenda buffers.
+
+Normally, habits display consistency graphs only in
+\"agenda\"-type agenda buffers, not in other types of agenda
+buffers.  Set this variable to any non-nil variable to show
+consistency graphs in all Org mode agendas.")
+
+(defun my/org-agenda-mark-habits ()
+  "Mark all habits in current agenda for graph display.
+
+This function enforces `my/org-habit-show-graphs-everywhere' by
+marking all habits in the current agenda as such.  When run just
+before `org-agenda-finalize' (such as by advice; unfortunately,
+`org-agenda-finalize-hook' is run too late), this has the effect
+of displaying consistency graphs for these habits.
+
+When `my/org-habit-show-graphs-everywhere' is nil, this function
+has no effect."
+  (when (and my/org-habit-show-graphs-everywhere
+         (not (get-text-property (point) 'org-series)))
+    (let ((cursor (point))
+          item data) 
+      (while (setq cursor (next-single-property-change cursor 'org-marker))
+        (setq item (get-text-property cursor 'org-marker))
+        (when (and item (org-is-habit-p item)) 
+          (with-current-buffer (marker-buffer item)
+            (setq data (org-habit-parse-todo item))) 
+          (put-text-property cursor
+                             (next-single-property-change cursor 'org-marker)
+                             'org-habit-p data))))))
+
+(advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits)
 
 ;; I use C-c c to start capture mode
 (global-set-key (kbd "C-c c") 'org-capture)
+
+(setq org-time-stamp-rounding-minutes (quote (1 1)))
 
 ;; Contacts template
 (defvar my/org-contacts-template )
@@ -770,4 +768,16 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 ;;  (string= "habit" (org-entry-get (or pom (point)) "STYLE")))
 (setenv "SSH_ASKPASS" "git-gui--askpass")
 
-(desktop-save-mode 1)
+;; Agenda clock report parameters
+(setq org-agenda-clockreport-parameter-plist
+      (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80)))
+
+; Set default column view headings: Task Effort Clock_Summary
+(setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
+
+; global Effort estimate values
+; global STYLE property values for completion
+(setq org-global-properties (quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
+                                    ("STYLE_ALL" . "habit"))))
+
+(setq org-export-with-sub-superscripts nil)
