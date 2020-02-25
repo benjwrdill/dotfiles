@@ -1,8 +1,3 @@
-
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
 (package-initialize)
 
 (require 'package)
@@ -32,40 +27,41 @@
 (desktop-save-mode 1)
 
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(custom-enabled-themes (quote (sanityinc-solarized-light)))
  '(custom-safe-themes
    (quote
     ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" default)))
  '(debug-on-error t)
- '(org-contacts-files (quote ("~/git/org/contacts.org")))
+ '(org-agenda-files
+   (quote
+    ("/Users/bendill/Dropbox/Documents/org/contacts.org" "/Users/bendill/Dropbox/Documents/org/diary.org" "/Users/bendill/Dropbox/Documents/org/jobs.org" "/Users/bendill/Dropbox/Documents/org/recipes.org" "/Users/bendill/Dropbox/Documents/org/refile.org" "/Users/bendill/Dropbox/Documents/org/steelcityswing.org" "/Users/bendill/Dropbox/Documents/org/todo.org" "/Users/bendill/Dropbox/Documents/org/zoldo.org")))
+ '(org-contacts-files (quote ("~/Dropbox/Documents/org/contacts.org")))
  '(org-export-backends (quote (ascii html icalendar latex md odt)))
  '(org-habit-show-habits-only-for-today t)
- '(org-pomodoro-audio-player nil)
- '(org-pomodoro-killed-sound-p t)
- '(org-pomodoro-ticking-sound-p t)
+ '(org-startup-truncated nil)
  '(package-selected-packages
    (quote
-    (org-plus-contrib magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
- '(show-paren-mode t))
+    (mu4e-alert org-plus-contrib magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
+ '(send-mail-function (quote smtpmail-send-it))
+ '(show-paren-mode t)
+ '(smtpmail-smtp-server "smtp.gmail.com")
+ '(smtpmail-smtp-service 25))
 
-(require 'org-tempo)
-(require 'org-habit)
+(use-package org-tempo)
+(use-package org-habit)
 (use-package org-contacts
   :ensure nil
   :after org
-  :custom (org-contacts-files '("~/git/org/contacts.org")))
+  :custom (org-contacts-files '("~/Dropbox/Documents/org/contacts.org")))
 ;;
 ;; Standard key bindings
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 
-(setq org-agenda-files (quote ("~/git/org"
-                               "~/git/motion")))
+(setq org-agenda-files (quote ("~/Dropbox/Documents/org"
+                               "~/Dropbox/Documents/proctoru"
+			       "~/Dropbox/Documents/Orgzly")))
 
 ;; Custom Key Bindings
 (global-set-key (kbd "<f12>") 'org-agenda)
@@ -157,8 +153,8 @@
               ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
               ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 
-(setq org-directory "~/git/org")
-(setq org-default-notes-file "~/git/org/refile.org")
+(setq org-directory "~/Dropbox/Documents/org")
+(setq org-default-notes-file "~/Dropbox/Documents/org/refile.org")
 (setq org-modules (quote (org-crypt
 			  org-id
 			  org-info
@@ -210,23 +206,23 @@ has no effect."
 
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (setq org-capture-templates
-      (quote (("t" "todo" entry (file "~/git/org/refile.org")
+      (quote (("t" "todo" entry (file "~/Dropbox/Documents/org/refile.org")
                "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-              ("r" "respond" entry (file "~/git/org/refile.org")
+              ("r" "respond" entry (file "~/Dropbox/Documents/org/refile.org")
                "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-              ("n" "note" entry (file "~/git/org/refile.org")
+              ("n" "note" entry (file "~/Dropbox/Documents/org/refile.org")
                "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-              ("j" "Journal" entry (file+datetree "~/git/org/diary.org")
+              ("j" "Journal" entry (file+datetree "~/Dropbox/Documents/org/diary.org")
                "* %?\n%U\n" :clock-in t :clock-resume t)
-              ("w" "org-protocol" entry (file "~/git/org/refile.org")
+              ("w" "org-protocol" entry (file "~/Dropbox/Documents/org/refile.org")
                "* TODO Review %c\n%U\n" :immediate-finish t)
-              ("m" "Meeting" entry (file "~/git/org/refile.org")
+              ("m" "Meeting" entry (file "~/Dropbox/Documents/org/refile.org")
                "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-              ("p" "Phone call" entry (file "~/git/org/refile.org")
+              ("p" "Phone call" entry (file "~/Dropbox/Documents/org/refile.org")
                "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-              ("h" "Habit" entry (file "~/git/org/refile.org")
+              ("h" "Habit" entry (file "~/Dropbox/Documents/org/refile.org")
                "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n")
-	      ("c" "Contact" entry (file "~/git/org/refile.org")
+	      ("c" "Contact" entry (file "~/Dropbox/Documents/org/refile.org")
 	       "* %(org-contacts-template-name)
 :PROPERTIES:
 :ADDRESS: %^{123 Broad St, Birmingham, AL 35244}
@@ -358,37 +354,40 @@ has no effect."
                nil))))
 
 (setq bh/hide-scheduled-and-waiting-next-tasks t)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
-;;
 ;; Resume clocking task when emacs is restarted
 (org-clock-persistence-insinuate)
-;;
+
 ;; Show lot of clocking history so it's easy to pick items off the C-F11 list
 (setq org-clock-history-length 23)
+
 ;; Resume clocking task on clock-in if the clock is open
 (setq org-clock-in-resume t)
+
 ;; Change tasks to NEXT when clocking in
 (setq org-clock-in-switch-to-state 'bh/clock-in-to-next)
+
 ;; Separate drawers for clocking and logs
 (setq org-drawers (quote ("PROPERTIES" "LOGBOOK")))
+
 ;; Save clock data and state changes and notes in the LOGBOOK drawer
 (setq org-clock-into-drawer t)
+
 ;; Sometimes I change tasks I'm clocking quickly - this removes clocked tasks with 0:00 duration
 (setq org-clock-out-remove-zero-time-clocks t)
+
 ;; Clock out when moving task to a done state
 (setq org-clock-out-when-done t)
+
 ;; Save the running clock and all clock history when exiting Emacs, load it on startup
 (setq org-clock-persist t)
+
 ;; Do not prompt to resume an active clock
 (setq org-clock-persist-query-resume nil)
+
 ;; Enable auto clock resolution for finding open clocks
 (setq org-clock-auto-clock-resolution (quote when-no-clock-is-running))
+
 ;; Include current clocking task in clock reports
 (setq org-clock-report-include-clocking-task t)
 
@@ -486,7 +485,7 @@ as the default task."
 
 (add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
 
-(require 'org-id)
+(use-package org-id)
 (defun bh/clock-in-task-by-id (id)
   "Clock in a task by id"
   (org-with-point-at (org-id-find id 'marker)
@@ -781,3 +780,6 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
                                     ("STYLE_ALL" . "habit"))))
 
 (setq org-export-with-sub-superscripts nil)
+
+(org-babel-load-file "~/.emacs.d/org-secrets.org")
+(org-babel-load-file "~/.emacs.d/email.org")
