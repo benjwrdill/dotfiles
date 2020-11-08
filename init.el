@@ -1,3 +1,10 @@
+;;; package --- Summary
+;;  Initialize settings for emacs
+
+;;; Commentary:
+;;  Currently trying to move settings to literate org-mode files
+
+;;; Code:
 (package-initialize)
 
 (require 'package)
@@ -27,28 +34,73 @@
 (desktop-save-mode 1)
 
 (custom-set-variables
- '(custom-enabled-themes (quote (sanityinc-solarized-light)))
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(backup-by-copying t)
+ '(backup-directory-alist (quote (("." . "~/.saves"))))
+ '(company-backends
+   (quote
+    (company-org-roam company-bbdb company-eclim company-semantic company-clang company-xcode company-cmake company-capf company-files
+                      (company-dabbrev-code company-gtags company-etags company-keywords)
+                      company-oddmuse company-dabbrev)))
+ '(custom-enabled-themes (quote (sanityinc-solarized-dark)))
  '(custom-safe-themes
    (quote
     ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" default)))
  '(debug-on-error t)
+ '(deft-default-extension "org" t)
+ '(deft-directory "~/Dropbox/Documents/roam/" t)
+ '(deft-recursive t t)
+ '(deft-use-filter-string-for-filename t t)
+ '(delete-old-versions t)
+ '(epa-pinentry-mode (quote loopback))
+ '(epa-popup-info-window nil)
+ '(kept-new-versions 6)
+ '(mu-worlds (quote (["1" "achaea.com" 23 "nil" "nil"])))
  '(org-agenda-files
    (quote
-    ("/Users/bendill/Dropbox/Documents/org/contacts.org" "/Users/bendill/Dropbox/Documents/org/diary.org" "/Users/bendill/Dropbox/Documents/org/jobs.org" "/Users/bendill/Dropbox/Documents/org/recipes.org" "/Users/bendill/Dropbox/Documents/org/refile.org" "/Users/bendill/Dropbox/Documents/org/steelcityswing.org" "/Users/bendill/Dropbox/Documents/org/todo.org" "/Users/bendill/Dropbox/Documents/org/zoldo.org")))
+    ("~/Dropbox/Documents/roam/20200316144100-gtd_book.org" "/Users/bendill/Dropbox/Documents/org/benjwrdill.org" "/Users/bendill/Dropbox/Documents/org/contacts.org" "/Users/bendill/Dropbox/Documents/org/diary.org" "/Users/bendill/Dropbox/Documents/org/food.org" "/Users/bendill/Dropbox/Documents/org/gcal.org" "/Users/bendill/Dropbox/Documents/org/goals.org" "/Users/bendill/Dropbox/Documents/org/jobs.org" "/Users/bendill/Dropbox/Documents/org/monthly_review.org" "/Users/bendill/Dropbox/Documents/org/recipes.org" "/Users/bendill/Dropbox/Documents/org/refile.org" "/Users/bendill/Dropbox/Documents/org/steelcityswing.org" "/Users/bendill/Dropbox/Documents/org/todo.org" "/Users/bendill/Dropbox/Documents/org/weekly-review.org" "/Users/bendill/Dropbox/Documents/org/zoldo.org" "/Users/bendill/Dropbox/Documents/proctoru/daily.org" "/Users/bendill/Dropbox/Documents/proctoru/email.org" "/Users/bendill/Dropbox/Documents/Orgzly/Orgzly.org" "/Users/bendill/Dropbox/Documents/roam")))
  '(org-contacts-files (quote ("~/Dropbox/Documents/org/contacts.org")))
  '(org-export-backends (quote (ascii html icalendar latex md odt)))
  '(org-habit-show-habits-only-for-today t)
+ '(org-journal-date-format "%A, %d %B %Y")
+ '(org-journal-date-prefix "#+TITLE: ")
+ '(org-journal-dir "~/Dropbox/Documents/journal/" nil nil "Customized with use-package org-journal")
+ '(org-journal-enable-agenda-integration t)
+ '(org-journal-file-format "%Y-%m-%d.org")
+ '(org-journal-file-header (quote bd/org-journal-file-header-func))
+ '(org-roam-directory "~/Dropbox/Documents/roam/")
+ '(org-roam-graph-viewer
+   "/Applications/GoogleChrome.app/Contents/MacOS/GoogleChrome")
+ '(org-roam-graphviz-executable "/usr/local/bin/dot" t)
  '(org-startup-truncated nil)
  '(package-selected-packages
    (quote
-    (mu4e-alert org-plus-contrib magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
+    (js2-refactor ac-js2 js2-mode flycheck yasnippet company-quickhelp company-terraform terraform-doc terraform-mode ox-gfm org-gcal mu4e-alert org-plus-contrib magit color-theme-sanityinc-solarized color-theme-sanityinc-tomorrow exec-path-from-shell go-mode)))
  '(send-mail-function (quote smtpmail-send-it))
  '(show-paren-mode t)
  '(smtpmail-smtp-server "smtp.gmail.com")
- '(smtpmail-smtp-service 25))
+ '(smtpmail-smtp-service 25)
+ '(version-control t))
 
-(use-package org-tempo)
-(use-package org-habit)
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
+(add-hook 'after-init-hook 'global-company-mode)
+
+(setq org-modules (quote (org-crypt
+			  org-id
+			  org-info
+			  org-contacts
+			  org-habit
+                          ol-eww)))
+(use-package org
+  :ensure org-plus-contrib)
+(eval-after-load "org"
+  '(require 'ox-gfm nil t))
+(require 'org-habit)
 (use-package org-contacts
   :ensure nil
   :after org
@@ -59,7 +111,8 @@
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 
-(setq org-agenda-files (quote ("~/Dropbox/Documents/org"
+(setq org-agenda-files (quote ("~/Dropbox/Documents/journal"
+			       "~/Dropbox/Documents/org"
                                "~/Dropbox/Documents/proctoru"
 			       "~/Dropbox/Documents/Orgzly")))
 
@@ -95,23 +148,24 @@
 (global-set-key (kbd "M-<f9>") 'org-toggle-inline-images)
 (global-set-key (kbd "C-x n r") 'narrow-to-region)
 (global-set-key (kbd "C-<f10>") 'next-buffer)
+(global-set-key (kbd "<f10>") 'notmuch)
 (global-set-key (kbd "<f11>") 'org-clock-goto)
 (global-set-key (kbd "C-<f11>") 'org-clock-in)
 (global-set-key (kbd "C-s-<f12>") 'bh/save-then-publish)
 (global-set-key (kbd "C-c c") 'org-capture)
-(global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "M-o") 'ace-window)
 
 (defun bh/hide-other ()
   (interactive)
   (save-excursion
     (org-back-to-heading 'invisible-ok)
-    (hide-other)
+    (outline-hide-other)
     (org-cycle)
     (org-cycle)
     (org-cycle)))
 
 (defun bh/set-truncate-lines ()
-  "Toggle value of truncate-lines and refresh window display."
+  "Toggle value of 'truncate-lines' and refresh window display."
   (interactive)
   (setq truncate-lines (not truncate-lines))
   ;; now refresh window display (an idiom from simple.el):
@@ -155,10 +209,6 @@
 
 (setq org-directory "~/Dropbox/Documents/org")
 (setq org-default-notes-file "~/Dropbox/Documents/org/refile.org")
-(setq org-modules (quote (org-crypt
-			  org-id
-			  org-info
-			  org-habit)))
 ;; position the habit graph on the agenda to the right of the default
 (setq org-habit-graph-column 50)
 
@@ -196,24 +246,33 @@ has no effect."
 
 (advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits)
 
-;; I use C-c c to start capture mode
-(global-set-key (kbd "C-c c") 'org-capture)
-
 (setq org-time-stamp-rounding-minutes (quote (1 1)))
 
 ;; Contacts template
 (defvar my/org-contacts-template )
 
+;; Helper function to get current org-journal file
+(defun bd/org-journal-find-location ()
+  ;; Open today's journal, but specify a non-nil prefix argument in order to
+  ;; inhibit inserting the heading; org-capture will insert the heading.
+  (org-journal-new-entry t)
+  ;; Position point on the journal's top-level heading so that org-capture
+  ;; will add the new entry as a child entry
+  (goto-line 2)
+  )
+
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (setq org-capture-templates
       (quote (("t" "todo" entry (file "~/Dropbox/Documents/org/refile.org")
-               "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+               "* TODO %^{Todo} %^G\n:PROPERTIES:\n:Created:%U\n:END:\n%a\n" :clock-in t :clock-resume t)
               ("r" "respond" entry (file "~/Dropbox/Documents/org/refile.org")
                "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
               ("n" "note" entry (file "~/Dropbox/Documents/org/refile.org")
                "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-              ("j" "Journal" entry (file+datetree "~/Dropbox/Documents/org/diary.org")
-               "* %?\n%U\n" :clock-in t :clock-resume t)
+              ("j" "Journal" entry (function bd/org-journal-find-location)
+               "** %(format-time-string org-journal-time-format)%^{Title}\n%T\n%i%?" :clock-in t :clock-resume t)
+	      ("k" "Todo Journal" entry (function bd/org-journal-find-location)
+               "** NEXT %^{Title}\n%T\n%i%?" :clock-in t :clock-resume t)
               ("w" "org-protocol" entry (file "~/Dropbox/Documents/org/refile.org")
                "* TODO Review %c\n%U\n" :immediate-finish t)
               ("m" "Meeting" entry (file "~/Dropbox/Documents/org/refile.org")
@@ -229,7 +288,12 @@ has no effect."
 :BIRTHDAY: %^{yyyy-mm-dd}
 :EMAIL: %(org-contacts-template-email)
 :NOTE: %^{NOTE}
-:END:" 	       :empty-lines 1))))
+:END:" 	       :empty-lines 1)
+	     ("w" "Review: Weekly Review" entry (file+olp+datetree "~/Dropbox/Documents/roam/reviews.org" "Weekly Reviews")
+	      (file "~/Dropbox/Documents/org/weekly-review.org"))
+;;	     ("m" "Review: Monthly Review" entry (file+datetree "~/Dropbox/Documents/roam/reviews.org")
+;;	      (file "~/Dropbox/Documents/org/monthly-review.org"))
+	     )))
 
 (setq org-clock-out-remove-zero-time-clocks t)
 ;; Remove empty LOGBOOK drawers on clock out
@@ -288,7 +352,18 @@ has no effect."
                ((org-agenda-overriding-header "Habits")
                 (org-agenda-sorting-strategy
                  '(todo-state-down effort-up category-keep))))
-              (" " "Agenda"
+	      ("p" "Plan"
+	       ((agenda "" ((org-agenda-span 1)
+			    (org-agenda-skip-function
+			     '(org-agenda-skip-entry-if 'regexp":STYLE:\s+habit"))))
+		(tags "Goals"
+		      ((org-agenda-overriding-header "Goals")
+		       (org-tags-match-list-sublevels nil)))
+		(tags "habit"
+		      ((org-agenda-overriding-header "Habits")
+		       (org-agenda-sorting-strategy
+			'(todo-state-down effort-up category-keep))))))
+              ("A" "Agenda"
                ((agenda "" nil)
                 (tags "REFILE"
                       ((org-agenda-overriding-header "Tasks to Refile")
@@ -347,7 +422,7 @@ has no effect."
                             (org-tags-match-list-sublevels nil)
                             (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
                             (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)))
-                (tags "-REFILE/"
+                (tags "-REFILE-CALENDAR-CONTACT-DIARY-JOBHUNT-FOOD/"
                       ((org-agenda-overriding-header "Tasks to Archive")
                        (org-agenda-skip-function 'bh/skip-non-archivable-tasks)
                        (org-tags-match-list-sublevels nil))))
@@ -779,7 +854,78 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 (setq org-global-properties (quote (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 0:00")
                                     ("STYLE_ALL" . "habit"))))
 
-(setq org-export-with-sub-superscripts nil)
+(defvar org-export-with-sub-superscripts nil)
 
+(org-babel-do-load-languages 'org-babel-load-languages
+			     '(
+			       (shell . t)
+			       (ruby . t)
+			       (plantuml . t)
+			       )
+			     )
+
+(setq org-plantuml-jar-path (expand-file-name "/usr/local/Cellar/plantuml/1.2020.17/libexec/plantuml.jar"))
+
+  (defvar bootstrap-version)
+
+  (let ((bootstrap-file
+	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+	(bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+	  (url-retrieve-synchronously
+	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+	   'silent 'inhibit-cookies)
+	(goto-char (point-max))
+	(eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+;;(org-babel-load-file "~/.emacs.d/straight.org")
 (org-babel-load-file "~/.emacs.d/org-secrets.org")
 (org-babel-load-file "~/.emacs.d/email.org")
+;;(org-babel-load-file "~/.emacs.d/org-gcal.org")
+(org-babel-load-file "~/.emacs.d/flycheck.org")
+(org-babel-load-file "~/.emacs.d/javascript.org")
+(org-babel-load-file "~/.emacs.d/org-roam.org")
+(org-babel-load-file "~/.emacs.d/org-complice.org")
+(org-babel-load-file "~/.emacs.d/org-diagram.org")
+(org-babel-load-file "~/.emacs.d/source-control.org")
+(org-babel-load-file "~/.emacs.d/jira.org")
+
+(org-babel-load-file "~/.emacs.d/inventory.org")
+
+(org-babel-load-file "~/.emacs.d/c.org")
+
+(load-file "~/.emacs.d/elegant-emacs/sanity.el")
+(load-file "~/.emacs.d/elegant-emacs/elegance.el")
+
+
+
+(autoload 'mu-open "mu" "Play on MUSHes and MUDs" t)
+(add-hook 'mu-connection-mode-hook 'ansi-color-for-comint-mode-on)
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+(org-babel-load-file "~/.emacs.d/achaea.org")
+
+(defun my--yas-expand-org-snippet (orig content &optional start end expand-env)
+  (if (eq major-mode 'org-mode)
+      (cl-flet ((insert (content)
+		     (org-paste-subtree nil content)))
+	(funcall orig content start end expand-env))
+    (funcall orig content start end expand-env)
+	)
+  )
+(advice-add 'yas-expand-snippet :around 'my--yas-expand-org-snippet)
+(setenv "PATH" (concat (getenv "PATH") ":/Users/bendill/.asdf/shims/"))
+
+(windmove-default-keybindings)
+
+(yas-global-mode 1)
+
+(provide 'init)
+;;; init.el ends here

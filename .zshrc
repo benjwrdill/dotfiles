@@ -34,10 +34,11 @@ plugins=(git)
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
-export PATH=/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+export PATH=/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/aws/bin:$PATH
 
 # Lets ViM do things.
-export EDITOR="vim"
+export EDITOR="/usr/local/bin/emacsclient"
+export VISUAL="/usr/local/bin/emacsclient"
 bindkey -v
 
 # vi style incremental search
@@ -49,3 +50,14 @@ bindkey '^N' history-incremental-search-forward
 # aliases
 alias -r tux='tmux -2 attach-session' # opens tmux in 256-color mode with
                                       # friendly windowpanes
+alias chktmp='/Users/bendill/scripts/check-tmp-for-activity.sh'
+
+
+. /usr/local/opt/asdf/asdf.sh
+eval "$(fasd --init posix-alias zsh-hook)"
+
+export PKG_CONFIG_PATH=/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /Users/bendill/.asdf/installs/terraform/0.12.24/bin/terraform terraform
+
